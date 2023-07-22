@@ -2,16 +2,15 @@ import numpy as np
 import pandas as pd
 
 class MyKNNReg():
-    """
-    kNN algorithm for regression realisation with numpy and pandas.
-
-    The realisation of kNN algorithm for regression task which predicts based on the mean 
-    of neighbours. To count distances, the model can use euclidean, 
-    manhattan, chebyshev or cosine distance. Weighted mean based on rank and distance 
-    of neighbours are realised too. 
-    """
     def __init__(self, k = 3,  metric = 'euclidean', weight = 'uniform') -> None:
         """
+        kNN algorithm for regression realisation with numpy and pandas.
+
+        The realisation of kNN algorithm for regression task which predicts based on the mean 
+        of neighbours. To count distances, the model can use euclidean, 
+        manhattan, chebyshev or cosine distance. Weighted mean based on rank and distance 
+        of neighbours are realised too. 
+        
         Parameters
         ----------
         k : int

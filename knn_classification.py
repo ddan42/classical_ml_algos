@@ -2,16 +2,15 @@ import numpy as np
 import pandas as pd
 
 class MyKNNClf():
-    """
-    kNN algorithm's realisation with numpy and pandas.
-
-    The realisation of kNN algorithm for classification task which can predict_proba 
-    (probability of class 1 in neighbors) and class (mode of neighbours). To count distances, 
-    the model can use euclidean, manhattan, chebyshev or cosine distance. 
-    Class prediction based on rank and distance of neighbours are realised too. 
-    """
     def __init__(self, k = 3, metric = 'euclidean', weight = 'uniform') -> None:
         """
+        kNN algorithm's realisation with numpy and pandas.
+
+        The realisation of kNN algorithm for classification task which can predict_proba 
+        (probability of class 1 in neighbors) and class (mode of neighbours). To count distances, 
+        the model can use euclidean, manhattan, chebyshev or cosine distance. 
+        Class prediction based on rank and distance of neighbours are realised too. 
+
         Parameters
         ----------
         k : int
