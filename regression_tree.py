@@ -121,6 +121,7 @@ class MyTreeReg():
         A model grows leaf-wise by minizing MSE for each split. It will recursively 
         iterate over the rows by first growing until reaching the most left 
         terminal node, then taking the right leaf of the node, etc. A leaf is a mean of its elements.
+        To analyze feature importance, feature importance is calculated using MSE gain.
         
         Parameters
         ----------
