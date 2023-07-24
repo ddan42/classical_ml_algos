@@ -115,9 +115,20 @@ class MyTreeReg():
         self.spliters = spliters
         return tree_dict
     def fit(self, X: pd.DataFrame(dtype='object'), y: pd.Series(dtype='object')):
-        """Model grows leaf-wise. It will recursively iterate over the rows 
-        by first growing until reaching the most left terminal node, 
-        then taking the right leaf of the node, etc."""
+        """
+        Training of a tree.
+
+        A model grows leaf-wise by minizing MSE for each split. It will recursively 
+        iterate over the rows by first growing until reaching the most left 
+        terminal node, then taking the right leaf of the node, etc. A leaf is a mean of its elements.
+        
+        Parameters
+        ----------
+        X: pd.DataFrame()
+            A dataframe with features for training
+        y: pd.Series()
+            A series with target value
+        """
         self.fi = {column: 0 for column in X}
         self.N = len(y)
         if self.bins is not None:
@@ -143,8 +154,8 @@ class MyTreeReg():
         else:
             self.preds.append(value)
     def predict(self, X_pred: pd.DataFrame(dtype='object')):
-        """Function will iterate each row until it fall into one leaf.
-        Each leaf is the mean of all its elements."""
+        """Function will iterate each row until it falls into one leaf.
+        Each leaf is the mean of its elements."""
         self.preds = list()
         for idx, row in X_pred.iterrows():
             self.iterate_prediction(row, self.tree_dict)
