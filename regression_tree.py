@@ -15,8 +15,8 @@ class MyTreeReg():
         ----------
 
         max_depth: int
-            A number which defines maximal number of tree level. On maximum values terminal
-            nodes (leaves) will be calculated
+            A number which defines maximal number of tree level. At maximum values terminal
+            nodes (leaves) will be calculated.
         min_samples_split: int 
             A number which defines minimal number of recordings which is needed
             to split a node into 2. If number is less, a terminal node will be 
@@ -25,7 +25,7 @@ class MyTreeReg():
             The total number of leaves in a tree. Tree preserves logical structure; if
             number is less than 2, 2 leaves will be created. If total number of leaves
             exceeds this number, growth will stop.
-        bins: int or None
+        bins: int or None   
             Number of splits a tree will have. If not specified, tree's unique values
             will be used. If the number of unique values of each feature is more 
             than this number, bins will be created with np.histogram.
@@ -126,9 +126,9 @@ class MyTreeReg():
         Parameters
         ----------
         X: pd.DataFrame()
-            A dataframe with features for training
+            A dataframe with features for training.
         y: pd.Series()
-            A series with target value
+            A series with target classes.
         """
         self.fi = {column: 0 for column in X}
         self.N = len(y)
@@ -154,7 +154,7 @@ class MyTreeReg():
                 self.iterate_prediction(row, tree['right'])
         else:
             self.preds.append(value)
-    def predict(self, X_pred: pd.DataFrame(dtype='object')):
+    def predict(self, X_pred: pd.DataFrame(dtype='object')) -> list:
         """Function will iterate each row until it falls into one leaf.
         Each leaf is the mean of its elements."""
         self.preds = list()

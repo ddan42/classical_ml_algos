@@ -16,8 +16,8 @@ class MyTreeClf():
         ----------
 
         max_depth: int
-            A number which defines maximal number of tree level. On maximum values terminal
-            nodes (leaves) will be calculated
+            A number which defines maximal number of tree level. At maximum values terminal
+            nodes (leaves) will be calculated.
         min_samples_split: int 
             A number which defines minimal number of recordings which is needed
             to split a node into 2. If number is less, a terminal node will be 
@@ -152,9 +152,9 @@ class MyTreeClf():
         Parameters
         ----------
         X: pd.DataFrame()
-            A dataframe with features for training
+            A dataframe with features for training.
         y: pd.Series()
-            A series with target value
+            A series with target classes.
         """
                 
         self.fi = {column: 0 for column in X}
@@ -181,7 +181,7 @@ class MyTreeClf():
                 self.iterate_prediction(row, tree['right'])
         else:
             self.preds.append(value)
-    def predict(self, X_pred):
+    def predict(self, X_pred) -> list:
         """This function will iterate each row until it falls into one leaf.
         Each leaf is the mean of its elements (the probability of class 1)."""
         self.preds = list()
