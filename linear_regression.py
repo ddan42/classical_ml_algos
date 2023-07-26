@@ -7,7 +7,7 @@ class MyLineReg():
                  metric = 'mse', reg = None, l1_coef=0, l2_coef=0, 
                  sgd_sample = None, random_state = 42) -> None:
         '''
-        Linear regression with regularization and GD
+        Linear regression with regularization and Gradient Descent.
         
         Linear regression algorithm with Gradient Descent, regularisation and 
         Stochastic Gradient Descent. 
@@ -21,20 +21,20 @@ class MyLineReg():
             Number of iterations of updating weights based on loss function.
         learning_rate: float or lambda
             A factor by which gradients of weights are multiplied at each iteration.
-            It might be a functions of iteration.
+            It might be a function of iteration.
         weights: None
             Weights that model will use for predicting target. They are initialized and
             update during training.
         metric: str
-            Metric which will be printed during fitting.
+            A metric which will be printed during fitting.
         reg: None or str
             None if no regularization is used. 'l1' for l1-norm, 'l2' for l2-norm, 'elasticnet' for elastic net.
         l1_coef:
-            Helper parameter for regularization.
+            A helper parameter for regularization.
         l2_coef:
-            Helper parameter for regularization.
+            A helper parameter for regularization.
         sgd_sample: int or float
-            Number or share of samples to use for Stochastic Gradient Descent.
+            A number or share of samples to use for Stochastic Gradient Descent.
             SGD will be used only if this value is specified.
         '''
         self.n_iter = n_iter
@@ -128,15 +128,15 @@ class MyLineReg():
                 if verbose!=0 and ((i+1)%verbose==0 or i == 0):
                     print(f'{i+1}|loss: {metrics_dict[self.metric](y, np.dot(self.X, self.weights))}')
         self.final_score = metrics_dict[self.metric](y, np.dot(self.X, self.weights))
-    def get_coef(self):
+    def get_coef(self) -> list:
         """Returns all weights of linear model excluding bias as np.array."""
         return self.weights[1:]
-    def predict(self, X_pred: pd.DataFrame(dtype = 'object')):
-        """Predict target values from a dataframe with features. The model copy 
+    def predict(self, X_pred: pd.DataFrame(dtype = 'object')) -> np.array:
+        """Predicts target values from a dataframe with features. The model copies 
         data for training."""
         self.X_pred = X_pred.copy()
         self.X_pred.insert(0, 'ones', 1, allow_duplicates=True)
         return np.dot(self.X_pred, self.weights)
     def get_best_score(self) -> float:
-        """Returns score of metric achieved after the training."""
+        """Returns score of a metric score achieved after the training."""
         return self.final_score

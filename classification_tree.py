@@ -3,7 +3,7 @@ import pandas as pd
 
 class MyTreeClf():
     def __init__(self, max_depth = 5, min_samples_split = 2, 
-                 max_leaves = 20, bins = None, criterion = 'entropy'):
+                 max_leaves = 20, bins = None, criterion = 'entropy') -> None:
         """
         Classification Tree
 
@@ -141,7 +141,7 @@ class MyTreeClf():
             spliters.append([' ' * depth, depth, 'leaf_right', np.mean(yr)])
         self.spliters = spliters
         return tree_dict
-    def fit(self, X: pd.DataFrame(dtype='object'), y: pd.Series(dtype='object')):
+    def fit(self, X: pd.DataFrame(dtype='object'), y: pd.Series(dtype='object')) -> None:
         """
         A model grows leaf-wise by minizing criterion for each split. It will recursively 
         iterate over the rows by first growing until reaching the most left 

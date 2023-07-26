@@ -114,7 +114,7 @@ class MyTreeReg():
             spliters.append([' ' * depth, depth, 'leaf_right', np.mean(yr)])
         self.spliters = spliters
         return tree_dict
-    def fit(self, X: pd.DataFrame(dtype='object'), y: pd.Series(dtype='object')):
+    def fit(self, X: pd.DataFrame(dtype='object'), y: pd.Series(dtype='object')) -> None:
         """
         Training of a tree.
 
