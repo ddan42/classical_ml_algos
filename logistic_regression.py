@@ -3,7 +3,41 @@ import pandas as pd
 import random
 
 class MyLogReg():
-    def __init__(self, n_iter = 10, learning_rate = 0.1, weights = None, metric = None, reg = None, l1_coef = 0.0, l2_coef = 0.0, sgd_sample = None, random_state = 42):
+    def __init__(self, n_iter = 10, learning_rate = 0.1, weights = None, 
+                 metric = None, reg = None, l1_coef = 0.0, 
+                 l2_coef = 0.0, sgd_sample = None, random_state = 42):
+        '''
+        Logistic regression with regularization and Gradient Descent.
+        
+        Logistic regression algorithm with Gradient Descent, regularization and 
+        Stochastic Gradient Descent. 
+        Learning rate can be constant or scheduled on number of iterations with lambda function.
+        Model can print several metrics (Precision, Recall, ROC AUC, etc) 
+        and optimizes the log loss function.
+
+        Parameters
+        ----------
+        
+        n_iter: int
+            Number of iterations of updating weights based on loss function.
+        learning_rate: float or lambda
+            A factor by which gradients of weights are multiplied at each iteration.
+            It might be a function of iteration.
+        weights: None
+            Weights that model will use for predicting target. They are initialized and
+            update during training.
+        metric: str
+            A metric which will be printed during fitting.
+        reg: None or str
+            None if no regularization is used. 'l1' for l1-norm, 'l2' for l2-norm, 'elasticnet' for elastic net.
+        l1_coef:
+            A helper parameter for regularization.
+        l2_coef:
+            A helper parameter for regularization.
+        sgd_sample: int or float
+            A number or share of samples to use for Stochastic Gradient Descent.
+            SGD will be used only if this value is specified.
+        '''
         self.n_iter = n_iter
         self.learning_rate = learning_rate
         self.weights = weights
@@ -60,18 +94,35 @@ class MyLogReg():
                     total += ((df['class']==1) & (df['proba'] > row['proba'])).sum() 
                     total += 0.5*((df['class']==1) & (df['proba'] == row['proba'])).sum()
             return total/((df['class']==1).sum()*(df['class']==0).sum())
-    def fit(self, X, y, verbose = 0):
+    def fit(self, X, y, verbose = False):
+        """
+        Fitting data.
+
+        A model fits and trains a model. If verbose is specified, each number of steps from
+        verbose, metric score will be printed.
+
+        Parameters
+        ----------
+        X: pd.DataFrame()
+            DataFrame with features. The model will copy data for training.
+        y: pd.Series()
+            Series with target classes.
+        verbose: None or int
+            Verbose specifies number of steps at which metric score will be printed. 
+            Metric should be specified in initialization.
+        """
         def log_loss(y_true, y_pred):
             eps = 1e-15
             return -np.average(y_true@np.log(y_pred+eps)+(1-y_true)*np.log(1-y_pred+eps))+self.l1_coef*np.sum(np.abs(self.weights))+self.l2_coef*np.sum(self.weights**2)
         random.seed(self.random_state)
-        X.insert(0, 'w0', 1)
+        self.X = X.copy()
+        self.X.insert(0, 'w0', 1)
         if self.weights is None:
-            self.weights = np.ones(X.shape[1])
+            self.weights = np.ones(self.X.shape[1])
         if self.sgd_sample is None:
             for i in range(self.n_iter):
-                y_pred = 1/(1+np.exp(-np.dot(X, self.weights)))
-                grad_logloss = np.dot((y_pred-y), X)/X.shape[0]+self.l1_coef*np.sign(self.weights)+2*self.l2_coef*self.weights
+                y_pred = 1/(1+np.exp(-np.dot(self.X, self.weights)))
+                grad_logloss = np.dot((y_pred-y), self.X)/self.X.shape[0]+self.l1_coef*np.sign(self.weights)+2*self.l2_coef*self.weights
                 if callable(self.learning_rate):
                     self.weights -= self.learning_rate(i+1)*grad_logloss
                 else:
@@ -80,10 +131,10 @@ class MyLogReg():
                     print(f'{i+1}| loss: {log_loss(y, y_pred)}, {self.metric}: {self.get_metric(y, y_pred)}')  
         else:
             if type(self.sgd_sample) is float:
-                self.sgd_sample=int(np.rint(self.sgd_sample*X.shape[0]))
+                self.sgd_sample=int(np.rint(self.sgd_sample*self.X.shape[0]))
             for i in range(self.n_iter):
-                sample_rows_idx = random.sample(range(X.shape[0]), self.sgd_sample)
-                x_batch = X.iloc[sample_rows_idx]
+                sample_rows_idx = random.sample(range(self.X.shape[0]), self.sgd_sample)
+                x_batch = self.X.iloc[sample_rows_idx]
                 y_batch = y.iloc[sample_rows_idx]
                 y_pred_batch = 1/(1+np.exp(-np.dot(x_batch, self.weights)))
                 grad_logloss = np.dot((y_pred_batch-y_batch), x_batch)/x_batch.shape[0]+self.l1_coef*np.sign(self.weights)+2*self.l2_coef*self.weights
@@ -93,15 +144,22 @@ class MyLogReg():
                     self.weights -= self.learning_rate*grad_logloss
                 if (self.metric is not None) and (verbose != 0 and (i+1)%verbose==0):
                     print(f'{i+1}| loss: {log_loss(y_batch, y_pred_batch)}, {self.metric}: {self.get_metric(y_batch, y_pred_batch)}')  
-        y_proba = 1/(1+np.exp(-np.dot(X, self.weights)))
+        y_proba = 1/(1+np.exp(-np.dot(self.X, self.weights)))
         self.best_score = self.get_metric(y, y_proba)
     def predict_proba(self, X_pred):
-        X_pred.insert(0, 'w0', 1)
-        return 1/(1+np.exp(-np.dot(X_pred, self.weights)))
+        """Predicts target class from a dataframe with features."""
+        self.X_pred = X_pred.copy()
+        self.X_pred.insert(0, 'w0', 1)
+        return 1/(1+np.exp(-np.dot(self.X_pred, self.weights)))
     def predict(self, X_pred):
-        y_pred = self.predict_proba(self, X_pred)
+        """Predicts target class from a dataframe with features. Class 1 is identified
+        by threshold of 0.5. The model copies data for training."""
+        y_pred = self.predict_proba(X_pred)
         return np.where(y_pred>0.5, 1, 0)
     def get_coef(self):
+        """Returns all weights of linear model excluding bias as np.array."""
         return self.weights[1:]
     def get_best_score(self):
+        """Returns score of a metric score achieved after the training. The metric
+        should be specified in init."""
         return self.best_score
